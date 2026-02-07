@@ -1,271 +1,200 @@
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, Circle, AlertCircle } from 'lucide-react';
+import { ClipboardList, Check, RotateCcw, Trophy } from 'lucide-react';
 
 interface ChecklistItem {
   id: string;
-  category: string;
   text: string;
-  completed: boolean;
+  highlight?: boolean;
+}
+
+interface ChecklistCategory {
+  title: string;
+  color: string;
+  items: ChecklistItem[];
 }
 
 interface ChecklistProps {
   inModal?: boolean;
 }
 
-const Checklist: React.FC<ChecklistProps> = ({ inModal = false }) => {
-  const [items, setItems] = useState<ChecklistItem[]>([]);
-  const [loading, setLoading] = useState(true);
+const CHECKLIST_DATA: ChecklistCategory[] = [
+  {
+    title: "考前準備",
+    color: "bg-indigo-500",
+    items: [
+      { id: "p1", text: "確認已準備好應試有效證件正本（身分證、有照片健保卡、駕照、護照或身心障礙證明）。" },
+      { id: "p2", text: "仔細閱讀簡章之「試場規則」及「違規處理辦法」。" },
+      { id: "p3", text: "注意身體保健及安全，盡量避免出入公共場所。" },
+      { id: "p4", text: "查詢應試號碼與考試地點（預計 116 年 7 月上旬公布）。" },
+      { id: "p5", text: "於考試前一天 (7月9日) 下午 2 時至 4 時查看試場及座位。" },
+      { id: "p6", text: "熟悉前往考區試場的大眾運輸工具及路線。" },
+    ]
+  },
+  {
+    title: "考試當日 - 出門前",
+    color: "bg-pink-500",
+    items: [
+      { id: "d1", text: "再次確認有攜帶「應試有效證件正本」。", highlight: true },
+      { id: "d2", text: "檢查文具：黑色 2B 軟心鉛筆、黑色墨水原子筆、橡皮擦、修正帶(液)。" },
+      { id: "d3", text: "檢查工具：直尺、三角板、量角器、圓規。" },
+      { id: "d4", text: "確認手錶/時鐘無計算、通訊、記憶功能，且不會發出聲響。" },
+    ]
+  },
+  {
+    title: "考試當日 - 進試場前",
+    color: "bg-purple-500",
+    items: [
+      { id: "e1", text: "檢查證件正本、文具是否帶在身上。" },
+      { id: "e2", text: "確認鐘錶鬧鈴已關閉。" },
+      { id: "e3", text: "取下穿戴式裝置（智慧手錶/手環/眼鏡/耳機），放入臨時置物區。" },
+      { id: "e4", text: "手機完全關機（含鬧鈴/震動/飛航模式皆不可），放入臨時置物區。", highlight: true },
+    ]
+  },
+  {
+    title: "預備鈴響 - 進試場後",
+    color: "bg-blue-500",
+    items: [
+      { id: "r1", text: "除證件與文具外，其餘物品均放置於臨時置物區。" },
+      { id: "r2", text: "確認座位標示單（姓名/號碼/科目）正確，有誤舉手反映。" },
+      { id: "r3", text: "目視核對答題卷資料，考試開始鈴響前「不可翻閱、不可書寫、不可簽名」。" },
+    ]
+  },
+  {
+    title: "作答時注意事項",
+    color: "bg-emerald-500",
+    items: [
+      { id: "w1", text: "考試中不得飲食、喝水、嚼口香糖（除非事先申請）。" },
+      { id: "w2", text: "考試開始鈴響後，確認答題卷無誤，並於「確認後考生簽名」欄以正楷簽全名。", highlight: true },
+      { id: "w3", text: "保持答題卷清潔，不可破壞條碼或定位點。" },
+      { id: "w4", text: "劃記要粗、黑、清晰，且須「方格劃滿」。" },
+      { id: "w5", text: "結束鈴響畢，立即停止作答（含擦拭、加黑），雙手離開桌面。" },
+    ]
+  },
+  {
+    title: "小叮嚀",
+    color: "bg-amber-500",
+    items: [
+      { id: "t1", text: "確認報名時填寫的手機號碼可接收簡訊，以利收到試務通知。" },
+    ]
+  }
+];
 
-  const defaultItems: ChecklistItem[] = [
-    {
-      id: '1',
-      category: '文件準備',
-      text: '准考證',
-      completed: false,
-    },
-    {
-      id: '2',
-      category: '文件準備',
-      text: '身分證或護照',
-      completed: false,
-    },
-    {
-      id: '3',
-      category: '文件準備',
-      text: '黑色簽字筆（至少 2 支）',
-      completed: false,
-    },
-    {
-      id: '4',
-      category: '文件準備',
-      text: '其他需要的證件或應考憑證',
-      completed: false,
-    },
-    {
-      id: '5',
-      category: '物品準備',
-      text: '橡皮擦（考試用）',
-      completed: false,
-    },
-    {
-      id: '6',
-      category: '物品準備',
-      text: '計算器（經核可）',
-      completed: false,
-    },
-    {
-      id: '7',
-      category: '物品準備',
-      text: '手錶（無計算、儲存等功能）',
-      completed: false,
-    },
-    {
-      id: '8',
-      category: '物品準備',
-      text: '透明墊板',
-      completed: false,
-    },
-    {
-      id: '9',
-      category: '物品準備',
-      text: '清水和毛巾',
-      completed: false,
-    },
-    {
-      id: '10',
-      category: '衛生健康',
-      text: '體溫計（備用）',
-      completed: false,
-    },
-    {
-      id: '11',
-      category: '衛生健康',
-      text: '必要的藥物或醫療用品',
-      completed: false,
-    },
-    {
-      id: '12',
-      category: '衛生健康',
-      text: '感冒藥、胃藥等常用藥',
-      completed: false,
-    },
-    {
-      id: '13',
-      category: '前一晚',
-      text: '檢查天氣並準備適當衣著',
-      completed: false,
-    },
-    {
-      id: '14',
-      category: '前一晚',
-      text: '確認考場地點和交通路線',
-      completed: false,
-    },
-    {
-      id: '15',
-      category: '前一晚',
-      text: '早點睡覺，確保充足睡眠',
-      completed: false,
-    },
-    {
-      id: '16',
-      category: '考試當天',
-      text: '吃好早餐',
-      completed: false,
-    },
-    {
-      id: '17',
-      category: '考試當天',
-      text: '提前 30-45 分鐘到達考場',
-      completed: false,
-    },
-    {
-      id: '18',
-      category: '考試當天',
-      text: '檢查所有必要物品',
-      completed: false,
-    },
-    {
-      id: '19',
-      category: '考試當天',
-      text: '調整心態，深呼吸',
-      completed: false,
-    },
-    {
-      id: '20',
-      category: '考試當天',
-      text: '仔細閱讀題目，檢查答案',
-      completed: false,
-    },
-  ];
+const Checklist: React.FC<ChecklistProps> = ({ inModal = false }) => {
+  const [checkedItems, setCheckedItems] = useState<{ [key: string]: boolean }>(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('examChecklist');
+      return saved ? JSON.parse(saved) : {};
+    }
+    return {};
+  });
 
   useEffect(() => {
-    // 從 localStorage 載入項目
-    const saved = localStorage.getItem('examChecklist_116');
-    if (saved) {
-      setItems(JSON.parse(saved));
-    } else {
-      setItems(defaultItems);
-    }
-    setLoading(false);
-  }, []);
+    localStorage.setItem('examChecklist', JSON.stringify(checkedItems));
+  }, [checkedItems]);
 
   const toggleItem = (id: string) => {
-    const updated = items.map((item) =>
-      item.id === id ? { ...item, completed: !item.completed } : item
-    );
-    setItems(updated);
-    localStorage.setItem('examChecklist_116', JSON.stringify(updated));
+    setCheckedItems(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
   };
 
-  const resetAll = () => {
-    if (confirm('確定要重置所有勾選嗎？')) {
-      const reset = items.map((item) => ({ ...item, completed: false }));
-      setItems(reset);
-      localStorage.setItem('examChecklist_116', JSON.stringify(reset));
+  const resetChecklist = () => {
+    if (window.confirm('確定要清除所有勾選紀錄嗎？')) {
+      setCheckedItems({});
     }
   };
 
-  if (loading) {
-    return <div>載入中...</div>;
-  }
+  const calculateProgress = () => {
+    const totalItems = CHECKLIST_DATA.reduce((acc, cat) => acc + cat.items.length, 0);
+    const completedItems = Object.values(checkedItems).filter(Boolean).length;
+    return Math.round((completedItems / totalItems) * 100);
+  };
 
-  const categories = Array.from(new Set(items.map((item) => item.category)));
-  const completedCount = items.filter((item) => item.completed).length;
-  const progress = Math.round((completedCount / items.length) * 100);
+  const progress = calculateProgress();
 
   return (
-    <div className={`space-y-8 ${inModal ? 'max-h-full' : ''}`}>
-      {/* Progress Bar */}
-      <div className="space-y-3">
-        <div className="flex items-center justify-between">
-          <h3 className="text-lg font-bold text-slate-900">完成進度</h3>
-          <span className="text-3xl font-black text-indigo-600">{progress}%</span>
-        </div>
-        <div className="w-full bg-slate-200 rounded-full h-3 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-        <p className="text-sm text-slate-500 text-center">
-          已完成 {completedCount} / {items.length} 項
-        </p>
-      </div>
-
-      {/* Warning for those in modal */}
-      {inModal && (
-        <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex gap-3">
-          <AlertCircle className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-blue-900 mb-1">溫馨提示</p>
-            <p className="text-sm text-blue-700">
-              考試還有 14 天，現在是最後的準備階段。請逐項檢查，確保萬無一失！
-            </p>
-          </div>
-        </div>
-      )}
-
-      {/* Checklist Items */}
-      <div className="space-y-6">
-        {categories.map((category) => {
-          const categoryItems = items.filter((item) => item.category === category);
-          const categoryCompleted = categoryItems.filter((item) => item.completed).length;
-
-          return (
-            <div key={category}>
-              <div className="mb-4 flex items-center justify-between">
-                <h4 className="text-base font-bold text-slate-800">
-                  {category}
-                  <span className="ml-2 text-sm text-slate-400 font-normal">
-                    ({categoryCompleted}/{categoryItems.length})
-                  </span>
-                </h4>
-              </div>
-
-              <div className="space-y-2">
-                {categoryItems.map((item) => (
-                  <button
-                    key={item.id}
-                    onClick={() => toggleItem(item.id)}
-                    className={`w-full flex items-center gap-4 p-4 rounded-xl border-2 transition-all text-left ${
-                      item.completed
-                        ? 'bg-green-50 border-green-200 hover:border-green-300'
-                        : 'bg-white hover:bg-slate-50 border-slate-200 hover:border-indigo-300'
-                    }`}
-                  >
-                    <div className="flex-shrink-0">
-                      {item.completed ? (
-                        <CheckCircle2 className="w-6 h-6 text-green-600" />
-                      ) : (
-                        <Circle className="w-6 h-6 text-slate-300 group-hover:text-indigo-400" />
-                      )}
-                    </div>
-                    <span
-                      className={`flex-1 font-medium ${
-                        item.completed
-                          ? 'text-green-700 line-through'
-                          : 'text-slate-700'
-                      }`}
-                    >
-                      {item.text}
-                    </span>
-                  </button>
-                ))}
-              </div>
+    <div className="w-full">
+      {/* Sticky Header with Progress */}
+      <div className={`sticky z-20 mb-6 glass-card rounded-2xl p-4 border-indigo-100 shadow-sm transition-all duration-300 ${inModal ? 'top-0' : 'top-20'}`}>
+         <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+                <div className={`p-2 rounded-lg ${progress === 100 ? 'bg-yellow-100 text-yellow-600' : 'bg-indigo-100 text-indigo-600'}`}>
+                    {progress === 100 ? <Trophy className="w-5 h-5" /> : <ClipboardList className="w-5 h-5" />}
+                </div>
+                <div>
+                    <div className="text-xs font-bold uppercase tracking-wider text-slate-400">Preparation</div>
+                    <div className="text-sm font-bold text-slate-800">檢查進度: {progress}%</div>
+                </div>
             </div>
-          );
-        })}
+            
+            <div className="flex-1 max-w-xs mx-4 hidden sm:block">
+                <div className="h-2.5 bg-slate-100 rounded-full overflow-hidden border border-slate-200">
+                    <div 
+                        className={`h-full rounded-full transition-all duration-700 ease-out ${progress === 100 ? 'bg-gradient-to-r from-yellow-400 to-orange-500' : 'bg-gradient-to-r from-indigo-500 to-cyan-400'}`}
+                        style={{ width: `${progress}%` }}
+                    ></div>
+                </div>
+            </div>
+
+            <button 
+                onClick={resetChecklist}
+                className="p-2 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                title="重置清單"
+            >
+                <RotateCcw className="w-4 h-4" />
+            </button>
+         </div>
       </div>
 
-      {/* Reset Button */}
-      <div className="flex justify-center pt-4">
-        <button
-          onClick={resetAll}
-          className="px-6 py-2 text-sm font-medium text-slate-500 hover:text-slate-700 border border-slate-200 hover:border-slate-300 rounded-lg transition-colors"
-        >
-          重置所有進度
-        </button>
+      {/* Grid Layout */}
+      <div className={`grid gap-6 ${inModal ? 'md:grid-cols-2' : 'md:grid-cols-2 lg:grid-cols-3'}`}>
+        {CHECKLIST_DATA.map((category) => (
+            <div key={category.title} className="glass-card p-0 rounded-3xl overflow-hidden flex flex-col h-full hover:shadow-xl transition-shadow duration-300">
+                <div className="p-5 border-b border-slate-100 bg-white/50 backdrop-blur-sm">
+                    <div className="flex items-center gap-3">
+                        <div className={`w-2 h-2 rounded-full ring-4 ring-opacity-20 ${category.color.replace('bg-', 'ring-')} ${category.color}`}></div>
+                        <h3 className="font-bold text-slate-800">{category.title}</h3>
+                    </div>
+                </div>
+                
+                <div className="p-4 space-y-2 flex-1 bg-white/30">
+                    {category.items.map((item) => (
+                        <div 
+                            key={item.id} 
+                            onClick={() => toggleItem(item.id)}
+                            className={`
+                                group relative p-3 rounded-xl cursor-pointer transition-all duration-200 border
+                                ${checkedItems[item.id] 
+                                    ? 'bg-slate-50 border-transparent' 
+                                    : 'bg-white border-white/60 hover:border-indigo-200 hover:shadow-sm'
+                                }
+                            `}
+                        >
+                            <div className="flex items-start gap-3 relative z-10">
+                                <div className={`
+                                    mt-0.5 w-5 h-5 rounded-md border-2 flex items-center justify-center flex-shrink-0 transition-all duration-300
+                                    ${checkedItems[item.id] 
+                                        ? 'bg-emerald-500 border-emerald-500 rotate-0' 
+                                        : 'border-slate-300 bg-white group-hover:border-indigo-400'
+                                    }
+                                `}>
+                                    <Check className={`w-3.5 h-3.5 text-white stroke-[3px] transition-all duration-300 ${checkedItems[item.id] ? 'scale-100 opacity-100' : 'scale-50 opacity-0'}`} />
+                                </div>
+                                
+                                <span className={`text-sm leading-relaxed transition-all duration-300 ${
+                                    checkedItems[item.id] 
+                                        ? 'text-slate-400 line-through decoration-slate-300 opacity-60' 
+                                        : item.highlight ? 'text-indigo-900 font-bold' : 'text-slate-700 font-medium'
+                                }`}>
+                                    {item.text}
+                                </span>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        ))}
       </div>
     </div>
   );
