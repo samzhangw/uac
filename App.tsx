@@ -200,7 +200,7 @@ function App() {
             <div className="space-y-8 text-center lg:text-left">
                 <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-indigo-50/80 border border-indigo-100 text-indigo-600 text-xs font-bold uppercase tracking-widest animate-fade-in-up">
                     <Sparkles className="w-3 h-3" />
-                    目標 2027 頂大錄取
+                    每天前進一點，離目標就更近一步
                 </div>
                 
                 <h1 className="text-5xl sm:text-7xl font-black text-slate-900 tracking-tighter leading-[1.1] animate-fade-in-up delay-100">
@@ -211,7 +211,7 @@ function App() {
                 </h1>
                 
                 <p className="text-lg text-slate-500 leading-relaxed max-w-xl mx-auto lg:mx-0 animate-fade-in-up delay-200">
-                    所有的努力都不會白費。在 2027 分科測驗的路上，讓每一個當下都成為未來的基石。
+                    所有的努力都不會白費。在分科測驗的路上，讓每一個當下都成為未來的基石。
                 </p>
 
                 <div className="flex flex-wrap justify-center lg:justify-start gap-4 animate-fade-in-up delay-300">
