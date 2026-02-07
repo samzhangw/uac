@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    
+    <!-- SEO Meta Tags -->
+    <title>116年分科測驗倒數 | 2027大學入學考試日程</title>
+    <meta name="description" content="專為2027年考生設計的116分科測驗倒數計時器。提供精準考試倒數、詳細日程表與應考檢查清單，協助高中生掌握備考節奏，前進理想頂大。" />
+    <meta name="keywords" content="116分科測驗, 2027分科測驗, 分科倒數, 大學入學考試, 116升學, 高中升學, 分科測驗日程, 應考檢查清單, 倒數計時" />
+    <meta name="author" content="116分科測驗倒數團隊" />
+    <meta name="robots" content="index, follow" />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="116年分科測驗倒數 | 2027大學入學考試日程" />
+    <meta property="og:description" content="專為2027年考生設計的116分科測驗倒數計時器。提供精準考試倒數、詳細日程表與應考檢查清單。" />
+    <meta property="og:locale" content="zh_TW" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:title" content="116年分科測驗倒數 | 2027大學入學考試日程" />
+    <meta property="twitter:description" content="專為2027年考生設計的116分科測驗倒數計時器。提供精準考試倒數、詳細日程表與應考檢查清單。" />
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['"Plus Jakarta Sans"', '"Noto Sans TC"', 'sans-serif'],
+            },
+            colors: {
+              primary: {
+                50: '#eff6ff',
+                100: '#dbeafe',
+                500: '#3b82f6',
+                600: '#2563eb',
+                700: '#1d4ed8',
+              }
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      body {
+        background-color: #f8fafc;
+        color: #0f172a;
+        overflow-x: hidden;
+      }
+      
+      /* Dynamic Aurora Background */
+      .aurora-bg {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        z-index: -2;
+        background: 
+          radial-gradient(at 0% 0%, rgba(167, 139, 250, 0.15) 0px, transparent 50%),
+          radial-gradient(at 100% 0%, rgba(16, 185, 129, 0.1) 0px, transparent 50%),
+          radial-gradient(at 100% 100%, rgba(59, 130, 246, 0.15) 0px, transparent 50%),
+          radial-gradient(at 0% 100%, rgba(236, 72, 153, 0.1) 0px, transparent 50%),
+          linear-gradient(to bottom right, #f8fafc, #f1f5f9);
+      }
+
+      .aurora-blob {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.6;
+        animation: float-blob 20s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+      }
+
+      .blob-1 { top: -10%; left: -10%; width: 50vw; height: 50vw; background: rgba(99, 102, 241, 0.2); animation-delay: 0s; }
+      .blob-2 { bottom: -10%; right: -10%; width: 60vw; height: 60vw; background: rgba(236, 72, 153, 0.15); animation-delay: -5s; }
+      .blob-3 { top: 40%; left: 40%; width: 40vw; height: 40vw; background: rgba(16, 185, 129, 0.1); animation-delay: -10s; }
+
+      /* Noise Texture overlay */
+      .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        opacity: 0.03;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+      }
+
+      /* Premium Glassmorphism */
+      .glass-card {
+        background: rgba(255, 255, 255, 0.75);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 
+          0 4px 6px -1px rgba(0, 0, 0, 0.01), 
+          0 2px 4px -1px rgba(0, 0, 0, 0.01),
+          inset 0 0 20px rgba(255, 255, 255, 0.5);
+      }
+      
+      .glass-card-hover {
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      }
+      .glass-card-hover:hover {
+        transform: translateY(-4px);
+        background: rgba(255, 255, 255, 0.85);
+        box-shadow: 
+          0 20px 25px -5px rgba(0, 0, 0, 0.05), 
+          0 10px 10px -5px rgba(0, 0, 0, 0.01);
+        border-color: rgba(255, 255, 255, 1);
+      }
+
+      /* Animations */
+      @keyframes float-blob {
+        0% { transform: translate(0, 0) scale(1); }
+        100% { transform: translate(20px, -20px) scale(1.1); }
+      }
+      
+      @keyframes fade-in-up {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      
+      .animate-fade-in-up {
+        animation: fade-in-up 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      }
+      
+      .delay-100 { animation-delay: 100ms; }
+      .delay-200 { animation-delay: 200ms; }
+      .delay-300 { animation-delay: 300ms; }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: rgba(0,0,0,0.02);
+      }
+      ::-webkit-scrollbar-thumb {
+        background: rgba(99, 102, 241, 0.2);
+        border-radius: 5px;
+        border: 2px solid rgba(0,0,0,0);
+        background-clip: padding-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: rgba(99, 102, 241, 0.4);
+        border: 2px solid rgba(0,0,0,0);
+        background-clip: padding-box;
+      }
+    </style>
+  <script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "@google/genai": "https://esm.sh/@google/genai@^1.40.0",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0",
+    "recharts": "https://esm.sh/recharts@^3.7.0"
+  }
+}
+</script>
+<link rel="stylesheet" href="/index.css">
+</head>
+  <body>
+    <div class="aurora-bg">
+      <div class="aurora-blob blob-1"></div>
+      <div class="aurora-blob blob-2"></div>
+      <div class="aurora-blob blob-3"></div>
+    </div>
+    <div class="noise-overlay"></div>
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
